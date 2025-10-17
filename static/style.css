@@ -1,0 +1,56 @@
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: #f9fafc;
+    color: #333;
+}
+
+header {
+    background: #ff7a93;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.toy-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.toy-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    padding: 20px;
+    transition: transform 0.2s ease;
+}
+
+.toy-card:hover {
+    transform: translateY(-4px);
+}
+
+.toy-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+button {
+    background: #ff7a93;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+button:hover {
+    background: #ff5577;
+}

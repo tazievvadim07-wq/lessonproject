@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Магазин мягких игрушек</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+<header>
+    <h1>Магазин мягких игрушек</h1>
+</header>
+
+<main>
+    <div class="toy-list">
+        {% for toy in toys %}
+        <div class="toy-card">
+            <img src="{{ toy.image.url }}" alt="{{ toy.name }}">
+            <h2>{{ toy.name }}</h2>
+            <p>{{ toy.description }}</p>
+            <p><strong>{{ toy.price }} ₸</strong></p>
+            <button>Купить</button>
+        </div>
+        {% endfor %}
+    </div>
+</main>
+
+<footer>
+    <p>© 2025 Мой магазин игрушек</p>
+</footer>
+</body>
+</html>
