@@ -1,0 +1,20 @@
+{% extends 'main/home.html' %}
+{% block content %}
+<h2>🛒 Ваша корзина</h2>
+
+{% if items %}
+  <ul>
+    {% for item in items %}
+      <li>
+        {{ item.toy.name }} — {{ item.quantity }} шт. × {{ item.toy.price }} ₸ =
+        {{ item.total_price }} ₸
+        <a href="{% url 'remove_from_cart' item.id %}">❌ Удалить</a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <h3>Итого: {{ total }} ₸</h3>
+{% else %}
+  <p>Ваша корзина пуста 😔</p>
+{% endif %}
+{% endblock %}

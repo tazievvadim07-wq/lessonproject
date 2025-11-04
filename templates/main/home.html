@@ -9,6 +9,10 @@
 <body>
 <header>
     <h1>Магазин мягких игрушек</h1>
+    <h2>Добро пожаловать, {{ user.username }}!</h2>
+    <a href="{% url 'cart_view' %}" class="btn btn-outline-dark position-absolute top-0 end-0 m-3">
+  🛒 Корзина
+</a>
 </header>
 
 <main>
