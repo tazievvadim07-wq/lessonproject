@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from .models import Toy, News
 
 
 def auth_view(request):
@@ -46,3 +47,35 @@ def home(request):
 def logout_view(request):
     logout(request)
     return redirect('auth')
+
+
+from .models import Toy, News
+
+def index(request):
+    query = request.GET.get('q')
+    tag = request.GET.get('tag')
+
+    toys = Toy.objects.all()
+    if query:
+        toys = toys.filter(name__icontains=query)
+    if tag:
+        toys = toys.filter(tags__name__iexact=tag)
+
+    # последние 3 новости
+    news_list = News.objects.order_by('-created_at')[:3]
+
+    return render(request, 'main/home.html', {
+        'toys': toys,
+        'query': query,
+        'tag': tag,
+        'news_list': news_list,
+    })
+
+
+
+
+def contact(request):
+    return render(request, 'main/contact.html')
+
+def about(request):
+    return render(request, 'main/about.html')

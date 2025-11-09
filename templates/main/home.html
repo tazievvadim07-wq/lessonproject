@@ -10,23 +10,60 @@
 <header>
     <h1>Магазин мягких игрушек</h1>
     <h2>Добро пожаловать, {{ user.username }}!</h2>
-    <a href="{% url 'cart_view' %}" class="btn btn-outline-dark position-absolute top-0 end-0 m-3">
-  🛒 Корзина
-</a>
+
+    <form method="get" action="{% url 'home' %}" style="display: inline-block; margin-left: 20px;">
+        <input type="text" name="q" placeholder="Поиск игрушек..." value="{{ query|default:'' }}">
+        <button type="submit">🔍</button>
+    </form>
+
+    <a href="{% url 'cart' %}" style="float: right; margin-right: 20px;">🛒 Корзина</a>
+    <a href="{% url 'contact' %}" style="float: right; margin-right: 20px;">Контакты</a>
+    <a href="{% url 'about' %}" style="float: right; margin-right: 20px;">О нас</a>
 </header>
 
-<main>
-    <div class="toy-list">
-        {% for toy in toys %}
-        <div class="toy-card">
-            <img src="{{ toy.image.url }}" alt="{{ toy.name }}">
-            <h2>{{ toy.name }}</h2>
-            <p>{{ toy.description }}</p>
-            <p><strong>{{ toy.price }} ₸</strong></p>
-            <button>Купить</button>
-        </div>
-        {% endfor %}
+<main style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
+    {% block content %}{% endblock %}
+
+    <!-- Левая часть — товары -->
+    <div class="toy-list" style="width: 70%;">
+        {% if toys %}
+            {% for toy in toys %}
+            <div class="toy-card">
+                <img src="{{ toy.image.url }}" alt="{{ toy.name }}">
+                <h2>{{ toy.name }}</h2>
+                <p>{{ toy.description }}</p>
+                <p><strong>{{ toy.price }} ₸</strong></p>
+
+                {% if toy.tags.all %}
+                    <p>
+                        <strong>Теги:</strong>
+                        {% for tag in toy.tags.all %}
+                            <span class="tag">#{{ tag.name }}</span>
+                        {% endfor %}
+                    </p>
+                {% endif %}
+
+                <button>Купить</button>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="text-align:center; font-size:18px; margin-top:20px;">Ничего не найдено 😕</p>
+        {% endif %}
     </div>
+
+    <!-- Правая часть — новости -->
+    <aside class="news-section" style="width: 25%; background: #f8f8f8; padding: 15px; border-radius: 10px;">
+        <h3 style="text-align:center;">📰 Новости</h3>
+        {% for news in news_list %}
+            <div class="news-item" style="margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+                <h4 style="margin: 0;">{{ news.title }}</h4>
+                <p style="font-size: 14px;">{{ news.content|truncatewords:20 }}</p>
+                <small style="color: gray;">{{ news.created_at|date:"d.m.Y" }}</small>
+            </div>
+        {% empty %}
+            <p>Пока нет новостей.</p>
+        {% endfor %}
+    </aside>
 </main>
 
 <footer>
