@@ -1,20 +1,25 @@
 {% extends 'main/home.html' %}
 {% block content %}
-<h2>🛒 Ваша корзина</h2>
+<h2>Ваша корзина</h2>
 
-{% if items %}
-  <ul>
-    {% for item in items %}
-      <li>
-        {{ item.toy.name }} — {{ item.quantity }} шт. × {{ item.toy.price }} ₸ =
-        {{ item.total_price }} ₸
-        <a href="{% url 'remove_from_cart' item.id %}">❌ Удалить</a>
-      </li>
+{% if cart_items %}
+<table>
+    <tr>
+        <th>Товар</th>
+        <th>Количество</th>
+        <th>Сумма</th>
+    </tr>
+    {% for item in cart_items %}
+    <tr>
+        <td>{{ item.toy.name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.toy.price|floatformat:2 }} ₸</td>
+    </tr>
     {% endfor %}
-  </ul>
-
-  <h3>Итого: {{ total }} ₸</h3>
+</table>
+<p><strong>Итого: {{ total }} ₸</strong></p>
 {% else %}
-  <p>Ваша корзина пуста 😔</p>
+<p>В корзине пока нет товаров.</p>
 {% endif %}
+
 {% endblock %}

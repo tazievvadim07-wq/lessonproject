@@ -5,6 +5,17 @@ body {
     color: #333;
 }
 
+
+a {
+    color: #ff7a93;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+    color:#ff7a93;
+}
+
 header {
     background: #ff7a93;
     color: white;

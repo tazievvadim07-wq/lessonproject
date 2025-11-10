@@ -24,12 +24,25 @@
 <main style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
     {% block content %}{% endblock %}
 
+    {% if messages %}
+<div style="margin: 15px auto; width: 80%;">
+    {% for message in messages %}
+        <div style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; background-color: #f0f0f0;">
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<main style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
+
+
     <!-- Левая часть — товары -->
     <div class="toy-list" style="width: 70%;">
         {% if toys %}
             {% for toy in toys %}
-            <div class="toy-card">
-                <img src="{{ toy.image.url }}" alt="{{ toy.name }}">
+            <div class="toy-card" style="border: 1px solid #ccc; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                <img src="{{ toy.image.url }}" alt="{{ toy.name }}" style="max-width: 150px; border-radius: 10px;">
                 <h2>{{ toy.name }}</h2>
                 <p>{{ toy.description }}</p>
                 <p><strong>{{ toy.price }} ₸</strong></p>
@@ -43,13 +56,35 @@
                     </p>
                 {% endif %}
 
-                <button>Купить</button>
+                <!-- 🔹 Кнопки действий -->
+                <div class="toy-buttons" style="display: flex; gap: 10px; margin-top: 10px;">
+                    <!-- Кнопка Купить -->
+                    <form action="{% url 'buy_now' toy.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit"
+                                style="padding: 8px 12px; background: #4CAF50; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                            Купить
+                        </button>
+                    </form>
+
+                    <!-- Кнопка В корзину -->
+                    <form action="{% url 'add_to_cart' toy.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit"
+                                style="padding: 8px 12px; background: #2196F3; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                            В корзину
+                        </button>
+                    </form>
+                </div>
             </div>
             {% endfor %}
         {% else %}
             <p style="text-align:center; font-size:18px; margin-top:20px;">Ничего не найдено 😕</p>
         {% endif %}
     </div>
+</main>
+</body>
+</html>
 
     <!-- Правая часть — новости -->
     <aside class="news-section" style="width: 25%; background: #f8f8f8; padding: 15px; border-radius: 10px;">

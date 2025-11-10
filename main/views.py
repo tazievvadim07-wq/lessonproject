@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Toy, News
+from cart.models import CartItem
 
 
 def auth_view(request):
@@ -41,7 +42,24 @@ def auth_view(request):
 
 @login_required
 def home(request):
-    return render(request, 'main/home.html')
+    query = request.GET.get('q')
+    tag = request.GET.get('tag')
+
+    toys = Toy.objects.all()
+    if query:
+        toys = toys.filter(name__icontains=query)
+    if tag:
+        toys = toys.filter(tags__name__iexact=tag)
+
+    news_list = News.objects.order_by('-created_at')[:3]
+
+    return render(request, 'main/home.html', {
+        'toys': toys,
+        'query': query,
+        'tag': tag,
+        'news_list': news_list,
+    })
+
 
 
 def logout_view(request):
@@ -71,11 +89,29 @@ def index(request):
         'news_list': news_list,
     })
 
-
-
-
 def contact(request):
     return render(request, 'main/contact.html')
 
 def about(request):
     return render(request, 'main/about.html')
+
+
+@login_required
+def add_to_cart(request, toy_id):
+    toy = get_object_or_404(Toy, id=toy_id)
+    
+    # Реальное добавление в корзину
+    cart_item, created = CartItem.objects.get_or_create(user=request.user, toy=toy)
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+
+    messages.info(request, f"Товар '{toy.name}' добавлен в корзину 🛒")
+    return redirect('home')
+
+
+@login_required
+def buy_now(request, toy_id):
+    toy = get_object_or_404(Toy, id=toy_id)
+    messages.success(request, f"Спасибо за покупку! Вы приобрели: {toy.name} 🎉")
+    return redirect('home')
