@@ -5,17 +5,6 @@ body {
     color: #333;
 }
 
-
-a {
-    color: #ff7a93;
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-    color:#ff7a93;
-}
-
 header {
     background: #ff7a93;
     color: white;
@@ -64,4 +53,15 @@ button {
 
 button:hover {
     background: #ff5577;
+}
+
+
+a {
+    color: #ff5577!important; 
+    text-decoration: none !important;
+}
+
+a:hover {
+    color: #c0392b !important; 
+    text-decoration: underline !important;
 }

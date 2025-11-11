@@ -45,12 +45,18 @@ def home(request):
     query = request.GET.get('q')
     tag = request.GET.get('tag')
 
+    # Базовый список игрушек
     toys = Toy.objects.all()
+
+    # Поиск по названию
     if query:
         toys = toys.filter(name__icontains=query)
+
+    # Фильтр по тегу
     if tag:
         toys = toys.filter(tags__name__iexact=tag)
 
+    # Показываем только последние 3 новости
     news_list = News.objects.order_by('-created_at')[:3]
 
     return render(request, 'main/home.html', {

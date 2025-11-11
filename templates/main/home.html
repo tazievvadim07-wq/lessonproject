@@ -79,7 +79,7 @@
             </div>
             {% endfor %}
         {% else %}
-            <p style="text-align:center; font-size:18px; margin-top:20px;">Ничего не найдено 😕</p>
+            
         {% endif %}
     </div>
 </main>
@@ -88,6 +88,7 @@
 
     <!-- Правая часть — новости -->
     <aside class="news-section" style="width: 25%; background: #f8f8f8; padding: 15px; border-radius: 10px;">
+        {% if news_list %}
         <h3 style="text-align:center;">📰 Новости</h3>
         {% for news in news_list %}
             <div class="news-item" style="margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
@@ -98,6 +99,7 @@
         {% empty %}
             <p>Пока нет новостей.</p>
         {% endfor %}
+        {% endif %}
     </aside>
 </main>
 
