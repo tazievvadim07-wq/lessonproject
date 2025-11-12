@@ -25,14 +25,61 @@
     {% block content %}{% endblock %}
 
     {% if messages %}
-<div style="margin: 15px auto; width: 80%;">
+<div id="toast-container">
     {% for message in messages %}
-        <div style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px; background-color: #f0f0f0;">
-            {{ message }}
-        </div>
+        <div class="toast">{{ message }}</div>
     {% endfor %}
 </div>
+
+<style>
+/* Контейнер внизу */
+#toast-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Каждый "тост" */
+.toast {
+    background: rgba(60, 60, 60, 0.9);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: toastFadeInOut 4s ease forwards;
+}
+
+/* Анимация появления и исчезновения */
+@keyframes toastFadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    90% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+</style>
 {% endif %}
+
 
 <main style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;">
 

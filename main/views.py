@@ -1,46 +1,49 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Q
 from .models import Toy, News
 from cart.models import CartItem
 
 
 def auth_view(request):
+    """Комбинированная страница для входа и регистрации."""
     if request.user.is_authenticated:
         return redirect('home')
 
-    register_form = UserCreationForm()
-    login_form = AuthenticationForm()
-
     if request.method == 'POST':
-        if 'register' in request.POST:
-            register_form = UserCreationForm(request.POST)
-            if register_form.is_valid():
-                user = register_form.save()
+        if 'login' in request.POST:
+            # 🔹 Вход
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user:
                 login(request, user)
-                messages.success(request, 'Регистрация прошла успешно!')
-                return redirect('home')
-            else:
-                messages.error(request, 'Ошибка при регистрации.')
-        elif 'login' in request.POST:
-            login_form = AuthenticationForm(data=request.POST)
-            if login_form.is_valid():
-                user = login_form.get_user()
-                login(request, user)
-                messages.success(request, 'Добро пожаловать!')
+                messages.success(request, f'Добро пожаловать, {username}!')
                 return redirect('home')
             else:
                 messages.error(request, 'Неверное имя пользователя или пароль.')
 
-    return render(request, 'main/auth.html', {
-        'register_form': register_form,
-        'login_form': login_form
-    })
+        elif 'register' in request.POST:
+            # 🔸 Регистрация
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            confirm_password = request.POST.get('confirm_password')
 
+            if password != confirm_password:
+                messages.error(request, 'Пароли не совпадают.')
+            elif User.objects.filter(username=username).exists():
+                messages.error(request, 'Пользователь с таким именем уже существует.')
+            else:
+                user = User.objects.create_user(username=username, password=password)
+                login(request, user)
+                messages.success(request, 'Регистрация прошла успешно!')
+                return redirect('home')
 
-from django.db.models import Q
+    return render(request, 'main/login_register.html')
+
 
 @login_required
 def home(request):

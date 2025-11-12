@@ -1,44 +1,69 @@
 {% extends 'main/home.html' %}
 {% block content %}
-<h2>🛒 Ваша корзина</h2>
+<h2>Ваша корзина</h2>
 
 {% if cart_items %}
-<form method="post">
-    {% csrf_token %}
-    <table border="1" cellspacing="0" cellpadding="10">
-        <tr>
-            <th>Изображение</th>
-            <th>Товар</th>
-            <th>Количество</th>
-            <th>Цена за штуку</th>
-            <th>Сумма</th>
-            <th>Действие</th>
-        </tr>
-        {% for item in cart_items %}
-        <tr>
-            <td>
-                {% if item.toy.image %}
-                    <img src="{{ item.toy.image.url }}" alt="{{ item.toy.name }}" width="80">
-                {% else %}
-                    <em>Нет изображения</em>
-                {% endif %}
-            </td>
-            <td>{{ item.toy.name }}</td>
-            <td>
-                <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" style="width:60px;">
-            </td>
-            <td>{{ item.toy.price|floatformat:2 }} ₸</td>
-            <td>{{ item.total_price|floatformat:2 }} ₸</td>
-            <td><a href="{% url 'remove_from_cart' item.id %}">Удалить</a></td>
-        </tr>
-        {% endfor %}
-    </table>
-    <p><strong>Итого: {{ total|floatformat:2 }} ₸</strong></p>
-    <button type="submit">Обновить количество</button>
-</form>
+<table id="cart-table">
+    <tr>
+        <th>Товар</th>
+        <th>Цена за шт.</th>
+        <th>Количество</th>
+        <th>Сумма</th>
+        <th></th>
+    </tr>
+    {% for item in cart_items %}
+    <tr data-price="{{ item.toy.price }}">
+        <td>
+            <img src="{{ item.toy.image.url }}" alt="{{ item.toy.name }}" style="width:80px; border-radius:8px;">
+            {{ item.toy.name }}
+        </td>
+        <td>{{ item.toy.price }} ₸</td>
+        <td>
+            <input type="number" min="1" value="{{ item.quantity }}" class="quantity-input"
+                   data-item-id="{{ item.id }}" style="width: 60px;">
+        </td>
+        <td class="item-total">{{ item.total_price }} ₸</td>
+        <td>
+            <a href="{% url 'remove_from_cart' item.id %}" style="color: red;">Удалить</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p style="margin-top: 20px; font-size: 18px;">
+    <strong>Итого: <span id="cart-total">{{ total }}</span> ₸</strong>
+</p>
+
 {% else %}
-<p>🧸 В корзине пока нет товаров.</p>
+<p>В корзине пока нет товаров.</p>
 {% endif %}
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const inputs = document.querySelectorAll(".quantity-input");
+    const cartTotalElem = document.getElementById("cart-total");
+
+    inputs.forEach(input => {
+        input.addEventListener("input", () => {
+            const row = input.closest("tr");
+            const price = parseFloat(row.dataset.price);
+            const quantity = parseInt(input.value);
+            const itemTotalCell = row.querySelector(".item-total");
+
+            // Обновляем сумму по товару
+            const itemTotal = price * quantity;
+            itemTotalCell.textContent = itemTotal + " ₸";
+
+            // Пересчитываем общую сумму
+            let total = 0;
+            document.querySelectorAll(".item-total").forEach(cell => {
+                total += parseFloat(cell.textContent);
+            });
+            cartTotalElem.textContent = total.toFixed(2);
+        });
+    });
+});
+</script>
 {% endblock %}
+
 
