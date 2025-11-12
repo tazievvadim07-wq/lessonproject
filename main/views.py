@@ -40,23 +40,25 @@ def auth_view(request):
     })
 
 
+from django.db.models import Q
+
 @login_required
 def home(request):
     query = request.GET.get('q')
     tag = request.GET.get('tag')
 
-    # Базовый список игрушек
     toys = Toy.objects.all()
 
-    # Поиск по названию
     if query:
-        toys = toys.filter(name__icontains=query)
+        toys = toys.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
 
-    # Фильтр по тегу
     if tag:
-        toys = toys.filter(tags__name__iexact=tag)
+        toys = toys.filter(tags__name__iexact=tag).distinct()
 
-    # Показываем только последние 3 новости
     news_list = News.objects.order_by('-created_at')[:3]
 
     return render(request, 'main/home.html', {
@@ -65,6 +67,7 @@ def home(request):
         'tag': tag,
         'news_list': news_list,
     })
+
 
 
 
