@@ -47,3 +47,13 @@ def remove_from_cart(request, item_id):
     item.delete()
     messages.warning(request, f"Товар '{item.toy.name}' удалён из корзины ❌")
     return redirect('cart')
+
+
+@login_required
+def checkout_cart(request):
+    if request.method == "POST":
+        # Удаляем все товары пользователя из корзины
+        CartItem.objects.filter(user=request.user).delete()
+        # Добавляем сообщение
+        messages.success(request, "Благодарим за покупку! 🎉")
+        return redirect('cart')

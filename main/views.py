@@ -127,3 +127,25 @@ def buy_now(request, toy_id):
     toy = get_object_or_404(Toy, id=toy_id)
     messages.success(request, f"Спасибо за покупку! Вы приобрели: {toy.name} 🎉")
     return redirect('home')
+
+
+
+@login_required
+def profile_view(request):
+    """Личный кабинет пользователя: просмотр и редактирование имени и email."""
+    user = request.user
+
+    if request.method == 'POST':
+        new_username = request.POST.get('username')
+        new_email = request.POST.get('email')
+
+        if new_username:
+            user.username = new_username
+        if new_email:
+            user.email = new_email
+
+        user.save()
+        messages.success(request, 'Данные профиля обновлены!')
+        return redirect('profile')
+
+    return render(request, 'main/profile.html', {'user': user})

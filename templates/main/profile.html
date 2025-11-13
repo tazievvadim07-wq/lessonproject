@@ -1,0 +1,31 @@
+{% extends 'main/home.html' %}
+{% block content %}
+<div style="max-width:500px; margin:40px auto; background:white; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+    <h2 style="text-align:center; margin-bottom:20px;">Личный кабинет</h2>
+    <div class=" contact-container" style="display:flex; flex-direction:column; gap:15px;">
+
+    <form method="post">
+        {% csrf_token %}
+        <label>Имя пользователя:</label>
+        <input type="text" name="username" value="{{ user.username }}" required style="width:100%; padding:10px; margin:8px 0; border-radius:8px; border:1px solid #ccc;">
+
+        <label>Email:</label>
+        <input type="email" name="email" value="{{ user.email }}" style="width:100%; padding:10px; margin:8px 0; border-radius:8px; border:1px solid #ccc;">
+
+        <button type="submit" style="width:100%; padding:12px; background:#ff7a93; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:10px;">
+            Сохранить
+        </button>
+    </form>
+
+    {% if messages %}
+    <div style="margin-top:15px; color:green;">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+   <p>  <a href="{% url 'logout' %}" class="logout-btn">Выйти из аккаунта</a></p>
+</div>
+
+{% endblock %}

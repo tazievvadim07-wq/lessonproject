@@ -34,6 +34,26 @@
     <strong>Итого: <span id="cart-total">{{ total }}</span> ₸</strong>
 </p>
 
+
+{% if cart_items %}
+    <div style="text-align:center; margin-top: 30px;">
+        <form method="post" action="{% url 'checkout_cart' %}">
+            {% csrf_token %}
+            <button type="submit" style="
+                background: #ff7a93;
+                color: white;
+                padding: 12px 30px;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 18px;">
+                💳 Оплатить корзину
+            </button>
+        </form>
+    </div>
+{% endif %}
+
+
 {% else %}
 <p>В корзине пока нет товаров.</p>
 {% endif %}
