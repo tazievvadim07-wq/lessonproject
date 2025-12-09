@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.db.models import Q
 from .models import Toy, News
 from cart.models import CartItem
+from django.db.models.functions import Lower
 
 
 def auth_view(request):
@@ -44,20 +45,23 @@ def auth_view(request):
 
     return render(request, 'main/login_register.html')
 
-
-@login_required
 def home(request):
-    query = request.GET.get('q')
-    tag = request.GET.get('tag')
+    query = request.GET.get('q', '').strip().lower()
+    tag = request.GET.get('tag', '').strip()
 
     toys = Toy.objects.all()
 
     if query:
-        toys = toys.filter(
-            Q(name__icontains=query) |
-            Q(description__icontains=query) |
-            Q(tags__name__icontains=query)
+        query_lower = query.lower()
+        toys = toys.annotate(
+            name_lower=Lower('name'),
+            desc_lower=Lower('description')
+        ).filter(
+            Q(name_lower__icontains=query_lower) |
+            Q(desc_lower__icontains=query_lower) |
+            Q(tags__name__icontains=query_lower)
         ).distinct()
+
 
     if tag:
         toys = toys.filter(tags__name__iexact=tag).distinct()
@@ -72,34 +76,12 @@ def home(request):
     })
 
 
-
-
 def logout_view(request):
     logout(request)
     return redirect('auth')
 
 
-from .models import Toy, News
 
-def index(request):
-    query = request.GET.get('q')
-    tag = request.GET.get('tag')
-
-    toys = Toy.objects.all()
-    if query:
-        toys = toys.filter(name__icontains=query)
-    if tag:
-        toys = toys.filter(tags__name__iexact=tag)
-
-    # последние 3 новости
-    news_list = News.objects.order_by('-created_at')[:3]
-
-    return render(request, 'main/home.html', {
-        'toys': toys,
-        'query': query,
-        'tag': tag,
-        'news_list': news_list,
-    })
 
 def contact(request):
     return render(request, 'main/contact.html')

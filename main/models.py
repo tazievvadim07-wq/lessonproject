@@ -11,13 +11,12 @@ class Toy(models.Model):
     def __str__(self):
         return self.name
 
-
 class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True, verbose_name="Тег")
+    name = models.CharField(max_length=50)  # название тега
+    
 
     def __str__(self):
         return self.name
-    
 
 class News(models.Model):
     title = models.CharField(max_length=100)
@@ -27,5 +26,3 @@ class News(models.Model):
     def __str__(self):
         return self.title
     
-
-
