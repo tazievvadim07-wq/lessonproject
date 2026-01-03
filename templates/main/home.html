@@ -8,6 +8,14 @@
 </head>
 <body>
     <header>
+        {% if user.is_authenticated %}
+    {% if user.profile.avatar %}
+        <img src="{{ user.profile.avatar.url }}" width="40" style="border-radius:50%">
+    {% else %}
+        <img src="/static/default.png" width="40">
+    {% endif %}
+{% endif %}
+
     <div class="header-left">
         <a href="{% url 'home' %}"><img src="{% static 'logo.png' %}" alt="Логотип" class="logo"></a>
         <h1>Магазин мягких игрушек</h1>

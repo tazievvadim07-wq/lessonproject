@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from main.models import Toy
 from .models import CartItem
+from main.models import Purchase
+from django.utils import timezone
 
 
 @login_required
@@ -51,9 +53,21 @@ def remove_from_cart(request, item_id):
 
 @login_required
 def checkout_cart(request):
-    if request.method == "POST":
-        # Удаляем все товары пользователя из корзины
-        CartItem.objects.filter(user=request.user).delete()
-        # Добавляем сообщение
-        messages.success(request, "Благодарим за покупку! 🎉")
+    cart_items = CartItem.objects.filter(user=request.user)
+
+    if not cart_items.exists():
         return redirect('cart')
+
+    for item in cart_items:
+        Purchase.objects.create(
+            user=request.user,
+            toy=item.toy,
+            quantity=item.quantity,
+            price=item.toy.price
+        )
+
+    cart_items.delete()
+
+    messages.success(request, 'Покупка успешно завершена!')
+    return redirect('profile')
+

@@ -1,31 +1,71 @@
 {% extends 'main/home.html' %}
+{% load tz %} 
 {% block content %}
-<div style="max-width:500px; margin:40px auto; background:white; padding:30px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
-    <h2 style="text-align:center; margin-bottom:20px;">Личный кабинет</h2>
-    <div class=" contact-container" style="display:flex; flex-direction:column; gap:15px;">
 
-    <form method="post">
-        {% csrf_token %}
-        <label>Имя пользователя:</label>
-        <input type="text" name="username" value="{{ user.username }}" required style="width:100%; padding:10px; margin:8px 0; border-radius:8px; border:1px solid #ccc;">
+<div style="max-width:600px;margin:30px auto;background:#fff;padding:25px;border-radius:12px">
 
-        <label>Email:</label>
-        <input type="email" name="email" value="{{ user.email }}" style="width:100%; padding:10px; margin:8px 0; border-radius:8px; border:1px solid #ccc;">
+<h2>Личный кабинет</h2>
 
-        <button type="submit" style="width:100%; padding:12px; background:#ff7a93; color:white; border:none; border-radius:8px; cursor:pointer; margin-top:10px;">
-            Сохранить
-        </button>
-    </form>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
 
-    {% if messages %}
-    <div style="margin-top:15px; color:green;">
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
+    <div style="text-align:center">
+        {% if profile.avatar %}
+            <img src="{{ profile.avatar.url }}" width="120" style="border-radius:50%">
+        {% else %}
+            <img src="/static/default-avatar.png" width="120">
+        {% endif %}
     </div>
-    {% endif %}
+
+    <input type="file" name="avatar">
+
+    <button type="submit" name="delete_avatar">Удалить аватар</button>
+
+    <hr>
+
+    <input type="text" name="username" value="{{ user.username }}" required>
+    <input type="email" name="email" value="{{ user.email }}">
+
+    <button type="submit">Сохранить</button>
+</form>
+
+<hr>
+
+<h3 style="margin-top:30px;">🧾 История покупок</h3>
+
+{% if orders %}
+<div style="display:flex; flex-direction:column; gap:15px;">
+    {% for order in orders %}
+    <div style="
+        display:flex;
+        gap:15px;
+        padding:15px;
+        background:#fff;
+        border-radius:12px;
+        box-shadow:0 4px 10px rgba(0,0,0,0.08);
+        align-items:center;
+    ">
+        <img src="{{ order.toy.image.url }}" width="80" style="border-radius:10px;">
+
+        <div style="flex:1;">
+            <h4 style="margin:0;">{{ order.toy.name }}</h4>
+            <p style="margin:5px 0; color:#666;">
+                {{ order.created_at|localtime|date:"d.m.Y H:i" }}
+            </p>
+        </div>
+
+        <strong style="font-size:18px;">
+            {{ order.price }} ₸
+        </strong>
+    </div>
+    {% endfor %}
 </div>
-   <p>  <a href="{% url 'logout' %}" class="logout-btn">Выйти из аккаунта</a></p>
+{% else %}
+<p>Вы ещё ничего не покупали</p>
+{% endif %}
+
+
+
 </div>
 
 {% endblock %}

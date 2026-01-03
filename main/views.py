@@ -7,6 +7,8 @@ from django.db.models import Q
 from .models import Toy, News
 from cart.models import CartItem
 from django.db.models.functions import Lower
+from .models import Profile
+from .models import Purchase
 
 
 def auth_view(request):
@@ -107,27 +109,44 @@ def add_to_cart(request, toy_id):
 @login_required
 def buy_now(request, toy_id):
     toy = get_object_or_404(Toy, id=toy_id)
-    messages.success(request, f"Спасибо за покупку! Вы приобрели: {toy.name} 🎉")
-    return redirect('home')
 
+    Purchase.objects.create(
+        user=request.user,
+        toy=toy,
+        price=toy.price
+    )
+
+    messages.success(request, f"Спасибо за покупку! Вы купили «{toy.name}» 🎉")
+    return redirect('home')
 
 
 @login_required
 def profile_view(request):
-    """Личный кабинет пользователя: просмотр и редактирование имени и email."""
     user = request.user
+    profile, created = Profile.objects.get_or_create(user=user)
 
     if request.method == 'POST':
-        new_username = request.POST.get('username')
-        new_email = request.POST.get('email')
+        user.username = request.POST.get('username')
+        user.email = request.POST.get('email')
 
-        if new_username:
-            user.username = new_username
-        if new_email:
-            user.email = new_email
+        if 'avatar' in request.FILES:
+            profile.avatar = request.FILES['avatar']
+
+        if request.POST.get('delete_avatar'):
+            profile.avatar.delete(save=False)
+            profile.avatar = None
 
         user.save()
-        messages.success(request, 'Данные профиля обновлены!')
+        profile.save()
+
+        messages.success(request, 'Профиль обновлён')
         return redirect('profile')
 
-    return render(request, 'main/profile.html', {'user': user})
+    orders = Purchase.objects.filter(user=user).order_by('-purchased_at')
+
+    return render(request, 'main/profile.html', {
+        'user': user,
+        'profile': profile,
+        'orders': orders
+    })
+
